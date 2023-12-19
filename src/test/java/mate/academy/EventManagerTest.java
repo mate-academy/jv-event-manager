@@ -1,6 +1,5 @@
 package mate.academy;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -9,8 +8,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import mate.academy.listeners.SampleListener;
 import org.junit.jupiter.api.AfterEach;
@@ -130,4 +127,26 @@ public class EventManagerTest {
         // then
         assertTrue(latch.await(5, TimeUnit.SECONDS), "Not all events were processed in time");
     }
+
+    private void assertEventuallyProcessed(
+            SampleListener listener,
+            Event expectedEvent,
+            long timeout,
+            TimeUnit unit
+    ) throws InterruptedException {
+        long startTime = System.nanoTime();
+        long timeoutNanos = unit.toNanos(timeout);
+        boolean processed = false;
+
+        while (System.nanoTime() - startTime < timeoutNanos && !processed) {
+            if (expectedEvent.equals(listener.getProcessedEvent())) {
+                processed = true;
+            } else {
+                Thread.sleep(10); // Sleep a small amount of time before checking again
+            }
+        }
+
+        assertEquals(expectedEvent, listener.getProcessedEvent());
+    }
+    // Additional test cases...
 }
