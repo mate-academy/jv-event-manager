@@ -15,7 +15,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Timeout;
 
-@Timeout(value = 3, unit = TimeUnit.MINUTES)
 public class EventManagerTest {
     private EventManager manager;
 
@@ -30,6 +29,7 @@ public class EventManagerTest {
     }
 
     @RepeatedTest(100)
+    @Timeout(value = 2)
     void notifyEvent_SingleEvent_CorrectEventProcessed() throws InterruptedException {
         // given
         SampleListener listener = new SampleListener();
@@ -45,6 +45,7 @@ public class EventManagerTest {
     }
 
     @RepeatedTest(100)
+    @Timeout(value = 4)
     void notifyEvent_MultipleEvents_AllEventsProcessed() throws InterruptedException {
         // given
         final int numberOfEvents = 2;
@@ -81,6 +82,7 @@ public class EventManagerTest {
     }
 
     @RepeatedTest(100)
+    @Timeout(value = 2)
     void deregisterListener_EventAfterDeregistration_NotProcessed() throws InterruptedException {
         // given
         SampleListener listener = new SampleListener();
@@ -100,6 +102,7 @@ public class EventManagerTest {
     }
 
     @RepeatedTest(100)
+    @Timeout(value = 6)
     void notifyEvent_HighVolume_AllEventsProcessed() throws InterruptedException {
         // given
         final int numberOfEvents = 400;
