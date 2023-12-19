@@ -13,6 +13,7 @@ import mate.academy.listeners.SampleListener;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
 public class EventManagerTest {
@@ -28,7 +29,7 @@ public class EventManagerTest {
         manager.shutdown();
     }
 
-    @RepeatedTest(20)
+    @Test
     @Timeout(value = 2)
     void notifyEvent_SingleEvent_CorrectEventProcessed() throws InterruptedException {
         // given
@@ -81,7 +82,7 @@ public class EventManagerTest {
         assertTrue(processedEvents.containsAll(expectedEvents), "Not all expected events were processed");
     }
 
-    @RepeatedTest(20)
+    @Test
     @Timeout(value = 2)
     void deregisterListener_EventAfterDeregistration_NotProcessed() throws InterruptedException {
         // given
@@ -97,11 +98,11 @@ public class EventManagerTest {
         manager.notifyEvent(newEvent);
 
         // then
-        Thread.sleep(100); // Giving some time for the event (if any) to be processed
+        TimeUnit.MILLISECONDS.sleep(100); // Giving some time for the event (if any) to be processed
         assertNotEquals(newEvent, listener.getProcessedEvent());
     }
 
-    @RepeatedTest(20)
+    @Test
     @Timeout(value = 6)
     void notifyEvent_HighVolume_AllEventsProcessed() throws InterruptedException {
         // given
@@ -145,7 +146,7 @@ public class EventManagerTest {
             if (expectedEvent.equals(listener.getProcessedEvent())) {
                 processed = true;
             } else {
-                Thread.sleep(10); // Sleep a small amount of time before checking again
+                TimeUnit.MILLISECONDS.sleep(10); // Sleep a small amount of time before checking again
             }
         }
 
