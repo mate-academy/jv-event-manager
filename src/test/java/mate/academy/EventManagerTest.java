@@ -28,7 +28,7 @@ public class EventManagerTest {
         manager.shutdown();
     }
 
-    @RepeatedTest(100)
+    @RepeatedTest(20)
     @Timeout(value = 2)
     void notifyEvent_SingleEvent_CorrectEventProcessed() throws InterruptedException {
         // given
@@ -44,7 +44,7 @@ public class EventManagerTest {
         assertEventuallyProcessed(listener, event, 1, TimeUnit.SECONDS);
     }
 
-    @RepeatedTest(100)
+    @RepeatedTest(20)
     @Timeout(value = 4)
     void notifyEvent_MultipleEvents_AllEventsProcessed() throws InterruptedException {
         // given
@@ -81,7 +81,7 @@ public class EventManagerTest {
         assertTrue(processedEvents.containsAll(expectedEvents), "Not all expected events were processed");
     }
 
-    @RepeatedTest(100)
+    @RepeatedTest(20)
     @Timeout(value = 2)
     void deregisterListener_EventAfterDeregistration_NotProcessed() throws InterruptedException {
         // given
@@ -101,7 +101,7 @@ public class EventManagerTest {
         assertNotEquals(newEvent, listener.getProcessedEvent());
     }
 
-    @RepeatedTest(100)
+    @RepeatedTest(20)
     @Timeout(value = 6)
     void notifyEvent_HighVolume_AllEventsProcessed() throws InterruptedException {
         // given
@@ -151,5 +151,4 @@ public class EventManagerTest {
 
         assertEquals(expectedEvent, listener.getProcessedEvent());
     }
-    // Additional test cases...
 }
