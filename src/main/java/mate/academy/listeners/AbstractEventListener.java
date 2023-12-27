@@ -4,7 +4,7 @@ import mate.academy.Event;
 import mate.academy.EventListener;
 
 public class AbstractEventListener implements EventListener {
-    private volatile Event processedEvent = null;
+    private volatile Event processedEvent;
 
     @Override
     public void onEvent(Event e) {
