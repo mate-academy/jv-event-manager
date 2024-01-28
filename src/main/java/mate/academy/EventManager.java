@@ -4,8 +4,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class EventManager {
-    private final List<EventListener> eventListeners= new CopyOnWriteArrayList<>();
-
+    private final List<EventListener> eventListeners = new CopyOnWriteArrayList<>();
 
     public void registerListener(EventListener listener) {
         eventListeners.add(listener);
