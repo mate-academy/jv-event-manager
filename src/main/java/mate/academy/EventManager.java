@@ -9,6 +9,7 @@ public class EventManager {
     private static final int NUMBER_OF_THREADS = 3;
     private final List<EventListener> listeners = new CopyOnWriteArrayList<>();
     private final ExecutorService executorService = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
+
     public void registerListener(EventListener listener) {
         listeners.add(listener);
     }
