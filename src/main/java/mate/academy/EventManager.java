@@ -1,6 +1,7 @@
 package mate.academy;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class EventManager {
@@ -15,7 +16,8 @@ public class EventManager {
     }
 
     public void notifyEvent(Event event) {
-        eventListeners.forEach(eventListener -> eventListener.onEvent(event));
+        eventListeners.forEach(eventListener -> CompletableFuture
+                .runAsync(() -> eventListener.onEvent(event)));
     }
 
     public void shutdown() {
