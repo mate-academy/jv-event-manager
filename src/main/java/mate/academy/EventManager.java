@@ -10,7 +10,6 @@ public class EventManager {
     private final List<EventListener> registeredListenerList = new CopyOnWriteArrayList<>();
     private final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_QUANTITY);
 
-
     public void registerListener(EventListener listener) {
         registeredListenerList.add(listener);
     }
