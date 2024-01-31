@@ -31,6 +31,7 @@ public class EventManager {
     }
 
     public void shutdown() {
+        eventListeners.clear();
         executorService.shutdown();
     }
 }
