@@ -24,6 +24,7 @@ public class EventManager {
     }
 
     public void shutdown() {
+        listeners.clear();
         executorService.shutdown();
     }
 }
