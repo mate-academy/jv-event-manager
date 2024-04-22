@@ -10,7 +10,7 @@ public class EventManager {
 
     public EventManager() {
         int cores = Runtime.getRuntime().availableProcessors();
-        this.executorService = Executors.newFixedThreadPool(cores == 1 ? 1 : cores - 1);
+        executorService = Executors.newFixedThreadPool(cores > 1 ? cores - 1 : 1);
     }
 
     public void registerListener(EventListener listener) {
