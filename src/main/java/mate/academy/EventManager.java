@@ -6,28 +6,24 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class EventManager {
-    private final List<EventListener> data;
+    private final List<EventListener> listeners;
     private final ExecutorService executorService;
 
     public EventManager() {
-        data = new CopyOnWriteArrayList<>();
+        listeners = new CopyOnWriteArrayList<>();
         executorService = Executors.newCachedThreadPool();
     }
 
     public void registerListener(EventListener listener) {
-        data.add(listener);
+        listeners.add(listener);
     }
 
     public void deregisterListener(EventListener listener) {
-        data.remove(listener);
+        listeners.remove(listener);
     }
 
     public void notifyEvent(Event event) {
-        for (EventListener datum : data) {
-            executorService.submit(() -> {
-                datum.onEvent(event);
-            });
-        }
+        listeners.forEach(listener -> executorService.execute(() -> listener.onEvent(event)));
     }
 
     public void shutdown() {
