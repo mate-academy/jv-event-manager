@@ -27,6 +27,10 @@ public class EventManager {
 
     public void shutdown() {
         executor.shutdown();
+        tryShutdownNow();
+    }
+
+    private void tryShutdownNow() {
         try {
             if (!executor.awaitTermination(TERMINATION_TIMEOUT, TimeUnit.SECONDS)) {
                 executor.shutdownNow();
