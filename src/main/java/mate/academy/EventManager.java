@@ -1,6 +1,7 @@
 package mate.academy;
 
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,7 +20,7 @@ public class EventManager {
 
     public void notifyEvent(Event event) {
         for (EventListener listener : listeners) {
-            executor.submit(() -> listener.onEvent(event));
+            CompletableFuture.runAsync(() -> listener.onEvent(event), executor);
         }
     }
 
