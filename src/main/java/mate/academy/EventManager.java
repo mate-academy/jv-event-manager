@@ -20,17 +20,22 @@ public class EventManager {
 
     public void notifyEvent(Event event) {
         for (EventListener listener : listeners) {
-            executorService.submit(() -> listener.onEvent(event));
+            try {
+                executorService.execute(() -> listener.onEvent(event));
+            } catch (Exception ex) {
+                throw new RuntimeException("Can't notifying listener " + listener, ex);
+            }
         }
     }
 
     public void shutdown() {
         try {
-            if (!executorService.awaitTermination(1, TimeUnit.SECONDS)) {
-                executorService.shutdown();
+            executorService.shutdown();
+            if (!executorService.awaitTermination(10, TimeUnit.SECONDS)) {
+                executorService.shutdownNow();
             }
         } catch (InterruptedException e) {
-            executorService.shutdown();
+            executorService.shutdownNow();
             Thread.currentThread().interrupt();
         }
     }
