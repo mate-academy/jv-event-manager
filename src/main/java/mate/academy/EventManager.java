@@ -7,9 +7,15 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class EventManager {
     private List<EventListener> listeners = new CopyOnWriteArrayList<>();
+    private boolean isShutdown = false;
 
     public void registerListener(EventListener listener) {
-        listeners.add(listener);
+        if (isShutdown) {
+            throw new IllegalStateException("Cannot register listener after shutdown");
+        }
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
     }
 
     public void deregisterListener(EventListener listener) {
@@ -17,12 +23,13 @@ public class EventManager {
     }
 
     public void notifyEvent(Event event) {
-        for (EventListener listener : listeners) {
+        for (EventListener listener : new CopyOnWriteArrayList<>(listeners)) {
             listener.onEvent(event);
         }
     }
 
     public void shutdown() {
         listeners.clear();
+        isShutdown = true;
     }
 }
