@@ -30,7 +30,9 @@ public class EventManager {
 
     public void shutdown() {
         try {
-            executor.awaitTermination(1, TimeUnit.SECONDS);
+            if (executor.awaitTermination(1, TimeUnit.SECONDS)) {
+                executor.shutdownNow();
+            }
         } catch (InterruptedException e) {
             throw new RuntimeException("Error shutting down", e);
         }
