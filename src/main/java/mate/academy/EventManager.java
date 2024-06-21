@@ -5,8 +5,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class EventManager {
+    private static final Logger logger = Logger.getLogger(EventManager.class.getName());
     private final List<EventListener> listeners;
     private final ExecutorService executorService;
 
@@ -25,7 +28,13 @@ public class EventManager {
 
     public void notifyEvent(Event event) {
         for (EventListener listener : listeners) {
-            executorService.submit(() -> listener.onEvent(event));
+            executorService.submit(() -> {
+                try {
+                    listener.onEvent(event);
+                } catch (Exception ex) {
+                    logger.log(Level.SEVERE, "Exception while notifying listener: " + listener, ex);
+                }
+            });
         }
     }
 
@@ -33,9 +42,12 @@ public class EventManager {
         executorService.shutdown();
         try {
             if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
-                executorService.shutdownNow();
+                logger.warning("ExecutorService did not terminate in the specified time.");
+                List<Runnable> droppedTasks = executorService.shutdownNow();
+                logger.warning("ExecutorService was abruptly shut down. " + droppedTasks.size() + " tasks will not be executed.");
             }
         } catch (InterruptedException ex) {
+            logger.log(Level.SEVERE, "ExecutorService shutdown interrupted", ex);
             executorService.shutdownNow();
             Thread.currentThread().interrupt();
         }
