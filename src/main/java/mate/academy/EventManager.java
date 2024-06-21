@@ -44,7 +44,9 @@ public class EventManager {
             if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
                 logger.warning("ExecutorService did not terminate in the specified time.");
                 List<Runnable> droppedTasks = executorService.shutdownNow();
-                logger.warning("ExecutorService was abruptly shut down. " + droppedTasks.size() + " tasks will not be executed.");
+                logger.warning("ExecutorService was abruptly shut down. "
+                        + droppedTasks.size()
+                        + " tasks will not be executed.");
             }
         } catch (InterruptedException ex) {
             logger.log(Level.SEVERE, "ExecutorService shutdown interrupted", ex);
