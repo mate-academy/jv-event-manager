@@ -18,6 +18,9 @@ public class EventManager {
     }
 
     public void notifyEvent(Event event) {
+        if (event == null) {
+            throw new IllegalArgumentException("Event cannot be null");
+        }
         for (EventListener listener : listeners) {
             executorService.submit(() -> listener.onEvent(event));
         }
