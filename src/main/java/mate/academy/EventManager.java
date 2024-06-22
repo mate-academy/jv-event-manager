@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 public class EventManager {
     private final CopyOnWriteArrayList<EventListener> listeners = new CopyOnWriteArrayList<>();
-    private final ExecutorService executorService = Executors.newCachedThreadPool();
+    private final ExecutorService executorService = Executors.newFixedThreadPool(5);
 
     public void registerListener(EventListener listener) {
         listeners.addIfAbsent(listener);
@@ -18,9 +18,11 @@ public class EventManager {
     }
 
     public void notifyEvent(Event event) {
-        for (EventListener listener : listeners) {
-            executorService.submit(() -> listener.onEvent(event));
-        }
+        executorService.submit(() -> {
+            for (EventListener listener : listeners) {
+                listener.onEvent(event);
+            }
+        });
     }
 
     public void shutdown() {
@@ -28,9 +30,6 @@ public class EventManager {
         try {
             if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
                 executorService.shutdownNow(); // Cancel currently executing tasks
-                if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
-                    System.err.println("Executor service did not terminate");
-                }
             }
         } catch (InterruptedException ie) {
             executorService.shutdownNow();
