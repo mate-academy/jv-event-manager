@@ -6,7 +6,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class EventManager {
-    private final static int TIMEOUT = 10;
+    private static final int TIMEOUT = 10;
     private final CopyOnWriteArrayList<EventListener> listeners = new CopyOnWriteArrayList<>();
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
