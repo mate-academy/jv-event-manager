@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class EventManager {
     private final List<EventListener> listeners = new CopyOnWriteArrayList<>();
@@ -19,22 +18,16 @@ public class EventManager {
     }
 
     public void notifyEvent(Event event) {
-        for (EventListener e : listeners) {
+        for (EventListener listener : listeners) {
             try {
-                executor.execute(() -> e.onEvent(event));
+                executor.execute(() -> listener.onEvent(event));
             } catch (Exception ex) {
-                throw new RuntimeException("Error notifying listener: " + e, ex);
+                throw new RuntimeException("Error notifying listener: " + listener, ex);
             }
         }
     }
 
     public void shutdown() {
-        try {
-            if (executor.awaitTermination(1, TimeUnit.SECONDS)) {
-                executor.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            throw new RuntimeException("Error shutting down", e);
-        }
+        executor.shutdown();
     }
 }
