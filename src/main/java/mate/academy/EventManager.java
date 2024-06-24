@@ -6,12 +6,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class EventManager {
-    private CopyOnWriteArrayList<EventListener> events = new CopyOnWriteArrayList<>();
+    private final CopyOnWriteArrayList<EventListener> events;
     private final ExecutorService executor;
 
     public EventManager() {
         this.events = new CopyOnWriteArrayList<>();
-        this.executor = Executors.newCachedThreadPool();
+        this.executor = Executors.newScheduledThreadPool(10);
     }
 
     public void registerListener(EventListener listener) {
@@ -31,7 +31,7 @@ public class EventManager {
     public void shutdown() {
         executor.shutdown();
         try {
-            if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
+            if (!executor.awaitTermination(500, TimeUnit.SECONDS)) {
                 executor.shutdownNow();
                 if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
                     System.err.println("Executor did not terminate");

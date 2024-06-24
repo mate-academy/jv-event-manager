@@ -12,11 +12,9 @@ public class Main {
         manager.registerListener(sampleListener);
         manager.registerListener(loggingListener);
 
-        // Simulating an event
         Event event = new Event("UserLogin", "User123");
         manager.notifyEvent(event);
 
-        // Deregistering a listener and firing another event
         manager.deregisterListener(loggingListener);
         Event anotherEvent = new Event("UserLogout", "User123");
         manager.notifyEvent(anotherEvent);
