@@ -4,7 +4,6 @@ import mate.academy.listeners.LoggingListener;
 import mate.academy.listeners.SampleListener;
 
 public class Main {
-    // Feel free to play with this main method during the task implementation
     public static void main(String[] args) {
         EventManager manager = new EventManager();
         EventListener sampleListener = new SampleListener();
