@@ -1,17 +1,21 @@
 package mate.academy;
 
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class EventManager {
-    private final CopyOnWriteArrayList<EventListener> events;
+    private static final int THREAD_POOL_SIZE = 10;
+    private static final Logger logger = LogManager.getLogger(Main.class);
+    private final CopyOnWriteArraySet<EventListener> events;
     private final ExecutorService executor;
 
     public EventManager() {
-        this.events = new CopyOnWriteArrayList<>();
-        this.executor = Executors.newScheduledThreadPool(10);
+        this.events = new CopyOnWriteArraySet<>();
+        this.executor = Executors.newScheduledThreadPool(THREAD_POOL_SIZE);
     }
 
     public void registerListener(EventListener listener) {
@@ -34,7 +38,7 @@ public class EventManager {
             if (!executor.awaitTermination(500, TimeUnit.SECONDS)) {
                 executor.shutdownNow();
                 if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
-                    System.err.println("Executor did not terminate");
+                    logger.info("Executor did not terminate");
                 }
             }
         } catch (InterruptedException ie) {
