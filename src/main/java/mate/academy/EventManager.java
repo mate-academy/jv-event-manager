@@ -1,28 +1,33 @@
 package mate.academy;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class EventManager {
-    private ConcurrentLinkedQueue<EventListener> queueu;
+    private ConcurrentLinkedQueue<EventListener> queue;
 
     public EventManager() {
-        this.queueu = new ConcurrentLinkedQueue<>();
+        this.queue = new ConcurrentLinkedQueue<>();
     }
 
     public void registerListener(EventListener listener) {
-        queueu.offer(listener);
+        queue.offer(listener);
     }
 
     public void deregisterListener(EventListener listener) {
-        queueu.remove(listener);
+        queue.remove(listener);
     }
 
     public void notifyEvent(Event event) {
-        queueu.forEach(eventListener -> eventListener.onEvent(event));
-
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        queue.forEach(eventListener ->
+                CompletableFuture.runAsync(() -> eventListener.onEvent(event), executorService));
+        executorService.shutdown();
     }
 
     public void shutdown() {
-        queueu.clear();
+        queue.clear();
     }
 }
