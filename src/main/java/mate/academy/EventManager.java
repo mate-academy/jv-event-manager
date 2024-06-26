@@ -38,9 +38,7 @@ public class EventManager {
         try {
             if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
                 executor.shutdownNow();
-                if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
-                    logger.error("Executor did not terminate");
-                }
+                logger.error("Executor did not terminate");
             }
         } catch (InterruptedException e) {
             executor.shutdownNow();
