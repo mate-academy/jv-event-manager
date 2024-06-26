@@ -1,16 +1,18 @@
 package mate.academy;
 
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class EventManager {
-    private final CopyOnWriteArrayList<EventListener> listeners = new CopyOnWriteArrayList<>();
-    private final ExecutorService executorService = Executors.newFixedThreadPool(5);
+    public static final int THREADS_NUMBER = 5;
+    public static final int TIMEOUT = 60;
+    private final CopyOnWriteArraySet<EventListener> listeners = new CopyOnWriteArraySet<>();
+    private final ExecutorService executorService = Executors.newFixedThreadPool(THREADS_NUMBER);
 
     public void registerListener(EventListener listener) {
-        listeners.addIfAbsent(listener);
+        listeners.add(listener);
     }
 
     public void deregisterListener(EventListener listener) {
@@ -18,18 +20,16 @@ public class EventManager {
     }
 
     public void notifyEvent(Event event) {
-        executorService.submit(() -> {
-            for (EventListener listener : listeners) {
-                listener.onEvent(event);
-            }
-        });
+        for (EventListener listener : listeners) {
+            executorService.submit(() -> listener.onEvent(event));
+        }
     }
 
     public void shutdown() {
-        executorService.shutdown(); // Disable new tasks from being submitted
+        executorService.shutdown();
         try {
-            if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
-                executorService.shutdownNow(); // Cancel currently executing tasks
+            if (!executorService.awaitTermination(TIMEOUT, TimeUnit.SECONDS)) {
+                executorService.shutdownNow();
             }
         } catch (InterruptedException ie) {
             executorService.shutdownNow();
