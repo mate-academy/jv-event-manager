@@ -1,16 +1,19 @@
 package mate.academy;
 
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class EventManager {
-    private final List<EventListener> listeners = new CopyOnWriteArrayList<>();
-    private final ExecutorService executor = Executors.newFixedThreadPool(5);
+    private static final int THREAD_POOL_SIZE = 5;
+    private static final Logger logger = LogManager.getLogger(EventManager.class);
+    private final Set<EventListener> listeners = new CopyOnWriteArraySet<>();
+    private final ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
     public void registerListener(EventListener listener) {
         listeners.add(listener);
@@ -21,17 +24,12 @@ public class EventManager {
     }
 
     public void notifyEvent(Event event) {
-        List<Callable<Void>> tasks = listeners.stream()
-                .map(listener -> (Callable<Void>) () -> {
-                    listener.onEvent(event);
-                    return null;
-                })
-                .collect(Collectors.toList());
-
-        try {
-            executor.invokeAll(tasks);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+        for (var listener : listeners) {
+            CompletableFuture.runAsync(() -> listener.onEvent(event), executor)
+                    .exceptionally(ex -> {
+                        logger.error("Failed to handle an event: " + event, ex);
+                        return null;
+                    });
         }
     }
 
@@ -41,12 +39,12 @@ public class EventManager {
             if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
                 executor.shutdownNow();
                 if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
-                    System.err.println("Executor did not terminate");
+                    logger.error("Executor did not terminate");
                 }
             }
         } catch (InterruptedException e) {
             executor.shutdownNow();
-            Thread.currentThread().interrupt();
+            logger.error("Executor was interrupted during shutdown", e);
         }
     }
 }
