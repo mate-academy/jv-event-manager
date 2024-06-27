@@ -1,19 +1,23 @@
 package mate.academy;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class EventManager {
-    private List<EventListener> listeners = new CopyOnWriteArrayList<>();
-    private boolean isShutdown = false;
+    private final Set<EventListener> listeners = new CopyOnWriteArraySet<>();
+    private final ExecutorService executorService = Executors.newFixedThreadPool(5);
+    private final AtomicBoolean isShutdown = new AtomicBoolean(false);
 
     public void registerListener(EventListener listener) {
-        if (isShutdown) {
+        if (isShutdown.get()) {
             throw new IllegalStateException("Cannot register listener after shutdown");
         }
-        if (!listeners.contains(listener)) {
-            listeners.add(listener);
-        }
+        listeners.add(listener);
     }
 
     public void deregisterListener(EventListener listener) {
@@ -21,13 +25,19 @@ public class EventManager {
     }
 
     public void notifyEvent(Event event) {
-        for (EventListener listener : new CopyOnWriteArrayList<>(listeners)) {
-            listener.onEvent(event);
+        for (EventListener listener : listeners) {
+            CompletableFuture.runAsync(() -> listener.onEvent(event), executorService);
         }
     }
 
     public void shutdown() {
+        isShutdown.set(true);
         listeners.clear();
-        isShutdown = true;
+        executorService.shutdown();
+        try {
+            executorService.awaitTermination(30, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }
