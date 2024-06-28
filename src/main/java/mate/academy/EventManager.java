@@ -7,8 +7,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class EventManager {
-    public static final int THREAD_POOL_SIZE = 1;
-    public static final int SHUTDOWN_TIMEOUT_MINUTES = 2;
+    private static final int THREAD_POOL_SIZE = 1;
+    private static final int SHUTDOWN_TIMEOUT_MINUTES = 2;
     private final ThreadPoolExecutor executor;
     private final List<EventListener> listeners;
 
