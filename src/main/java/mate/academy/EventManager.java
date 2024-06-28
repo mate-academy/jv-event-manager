@@ -1,7 +1,7 @@
 package mate.academy;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
@@ -11,8 +11,10 @@ import java.util.logging.Logger;
 
 public class EventManager {
     private static final Logger LOGGER = Logger.getLogger(EventManager.class.getName());
-    private final List<EventListener> listeners = new CopyOnWriteArrayList<>();
-    private final ExecutorService executorService = Executors.newFixedThreadPool(10);
+    private static final int THREAD_POOL_SIZE = 10;
+    private static final int AWAIT_TERMINATION_TIMEOUT = 60;
+    private final Set<EventListener> listeners = new CopyOnWriteArraySet<>();
+    private final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
     public void registerListener(EventListener listener) {
         listeners.add(listener);
@@ -35,9 +37,10 @@ public class EventManager {
     public void shutdown() {
         try {
             executorService.shutdown();
-            if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+            if (!executorService.awaitTermination(AWAIT_TERMINATION_TIMEOUT, TimeUnit.SECONDS)) {
                 executorService.shutdownNow();
-                if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                if (!executorService.awaitTermination(AWAIT_TERMINATION_TIMEOUT,
+                        TimeUnit.SECONDS)) {
                     LOGGER.severe("ExecutorService did not terminate.");
                 }
             }
