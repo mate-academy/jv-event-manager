@@ -28,7 +28,7 @@ public class EventManager {
         listeners.clear();
         executor.shutdown();
         try {
-            if(!executor.awaitTermination(10, TimeUnit.SECONDS)) {
+            if (!executor.awaitTermination(10, TimeUnit.SECONDS)) {
                 executor.shutdownNow();
             }
         } catch (InterruptedException e) {
