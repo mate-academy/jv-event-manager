@@ -29,7 +29,10 @@ public class EventManager {
             try {
                 executorService.submit(() -> listener.onEvent(event));
             } catch (RejectedExecutionException e) {
-                LOGGER.log(Level.SEVERE, "Task submission rejected: ", e);
+                LOGGER.log(Level.WARNING, "Event: " + event
+                        + " was not handled by listeners, "
+                        + EventManager.class.getSimpleName()
+                        + " is shut down, or in the process of it.", e);
             }
         }
     }
@@ -39,10 +42,6 @@ public class EventManager {
             executorService.shutdown();
             if (!executorService.awaitTermination(AWAIT_TERMINATION_TIMEOUT, TimeUnit.SECONDS)) {
                 executorService.shutdownNow();
-                if (!executorService.awaitTermination(AWAIT_TERMINATION_TIMEOUT,
-                        TimeUnit.SECONDS)) {
-                    LOGGER.severe("ExecutorService did not terminate.");
-                }
             }
         } catch (InterruptedException e) {
             LOGGER.log(Level.SEVERE, "Shutdown interrupted: ", e);
