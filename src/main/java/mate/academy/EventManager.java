@@ -1,7 +1,7 @@
 package mate.academy;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -10,7 +10,7 @@ public class EventManager {
     private static final int THREAD_POOL_SIZE = 1;
     private static final int SHUTDOWN_TIMEOUT_MINUTES = 2;
     private final ThreadPoolExecutor executor;
-    private final List<EventListener> listeners;
+    private final Set<EventListener> listeners;
 
     public EventManager() {
         this.executor = new ThreadPoolExecutor(
@@ -20,10 +20,14 @@ public class EventManager {
                 TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<>()
         );
-        this.listeners = new CopyOnWriteArrayList<>();
+        this.listeners = new CopyOnWriteArraySet<>();
     }
 
     public void registerListener(EventListener listener) {
+        if (executor.isShutdown()) {
+            listeners.clear();
+            return;
+        }
         listeners.add(listener);
         setUpNewThreadPoolSize();
     }
@@ -53,12 +57,9 @@ public class EventManager {
 
     private void setUpNewThreadPoolSize() {
         int newSize = Math.max(listeners.size(), THREAD_POOL_SIZE);
-        if (executor.getPoolSize() > newSize) {
+        if (executor.getPoolSize() != newSize) {
             executor.setCorePoolSize(newSize);
             executor.setMaximumPoolSize(newSize);
-        } else {
-            executor.setMaximumPoolSize(newSize);
-            executor.setCorePoolSize(newSize);
         }
     }
 }
