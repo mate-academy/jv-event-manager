@@ -1,7 +1,9 @@
 package mate.academy;
 
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -10,11 +12,11 @@ import java.util.logging.Logger;
 
 public class EventManager {
     private static final Logger logger = Logger.getLogger(EventManager.class.getName());
-    private final List<EventListener> listeners;
+    private final Set<EventListener> listeners;
     private final ExecutorService executorService;
 
     public EventManager() {
-        this.listeners = new CopyOnWriteArrayList<>();
+        this.listeners = new CopyOnWriteArraySet<>();
         this.executorService = Executors.newCachedThreadPool();
     }
 
@@ -28,13 +30,14 @@ public class EventManager {
 
     public void notifyEvent(Event event) {
         for (EventListener listener : listeners) {
-            executorService.submit(() -> {
-                try {
-                    listener.onEvent(event);
-                } catch (Exception ex) {
-                    logger.log(Level.SEVERE, "Exception while notifying listener: " + listener, ex);
-                }
-            });
+            CompletableFuture.runAsync(()
+                            -> listener.onEvent(event), executorService)
+                    .exceptionally(ex -> {
+                        logger.log(Level.SEVERE,
+                                "Exception while notifying listener: "
+                                        + listener, ex);
+                        return null;
+                    });
         }
     }
 
