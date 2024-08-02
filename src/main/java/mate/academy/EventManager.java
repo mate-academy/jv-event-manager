@@ -3,10 +3,10 @@ package mate.academy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class EventManager {
-    private final List<EventListener> listenerList = Collections.synchronizedList(new ArrayList<>());
+    private final List<EventListener> listenerList = Collections.synchronizedList(
+            new ArrayList<>());
 
     public void registerListener(EventListener listener) {
         listenerList.add(listener);
