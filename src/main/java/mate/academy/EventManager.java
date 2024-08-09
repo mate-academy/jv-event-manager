@@ -2,9 +2,12 @@ package mate.academy;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class EventManager {
     private List<EventListener> listeners = new ArrayList<>();
+    private ExecutorService executorService = Executors.newCachedThreadPool();
 
     public void registerListener(EventListener listener) {
         if (listener != null && !listeners.contains(listener)) {
@@ -17,12 +20,12 @@ public class EventManager {
     }
 
     public void notifyEvent(Event event) {
-        for (EventListener listener : listeners) {
-            listener.onEvent(event);
-        }
+        listeners.forEach(l -> {
+            executorService.submit(() -> l.onEvent(event));
+        });
     }
 
     public void shutdown() {
-        listeners.clear();
+        executorService.shutdown();
     }
 }
