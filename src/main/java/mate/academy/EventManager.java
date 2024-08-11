@@ -23,12 +23,21 @@ public class EventManager {
         for (EventListener listener : listeners) {
             listener.onEvent(event);
         }
-        for (EventListener listener : listeners) {
-            CompletableFuture.runAsync(listener::getProcessedEvent, executor);
-        }
+        getProcessedEventFromListenersList();
     }
 
     public void shutdown() {
         executor.shutdown();
+    }
+
+    private void getProcessedEventFromListenersList() {
+        for (EventListener listener : listeners) {
+            CompletableFuture.runAsync(listener::getProcessedEvent,
+                    executor).exceptionally(this::handleException);
+        }
+    }
+
+    private Void handleException(Throwable throwable) {
+        throw new RuntimeException("Error while processing event", throwable);
     }
 }
