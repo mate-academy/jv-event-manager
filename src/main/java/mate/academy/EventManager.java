@@ -7,12 +7,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class EventManager {
-    private ExecutorService executor;
+    private ExecutorService executor = Executors.newFixedThreadPool(5);
     private List<EventListener> listeners = new CopyOnWriteArrayList<>();
-
-    public EventManager() {
-        executor = Executors.newFixedThreadPool(5);
-    }
 
     public void registerListener(EventListener listener) {
         listeners.add(listener);
