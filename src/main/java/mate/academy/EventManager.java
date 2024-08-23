@@ -27,7 +27,13 @@ public class EventManager {
     }
 
     public void notifyEvent(Event event) {
-        EVENT_LISTENERS.forEach(l -> l.onEvent(event));
+        Thread notifyEvent = new Thread(() -> EVENT_LISTENERS.forEach(l -> l.onEvent(event)));
+        notifyEvent.start();
+        try {
+            notifyEvent.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Can't join notifyEvent", e);
+        }
     }
 
     public void shutdown() {
