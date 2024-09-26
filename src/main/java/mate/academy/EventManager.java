@@ -15,8 +15,8 @@ public class EventManager {
     }
 
     public void notifyEvent(Event event) {
-        if (eventListeners.iterator().hasNext()) {
-            eventListeners.iterator().next().onEvent(event);
+        for (EventListener listener : eventListeners) {
+            listener.onEvent(event);
         }
     }
 
