@@ -1,15 +1,18 @@
 package mate.academy;
 
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class EventManager {
-    private final ConcurrentHashMap<EventListener, Boolean> listeners = new ConcurrentHashMap<>();
-    private final ExecutorService executorService = Executors.newCachedThreadPool();
+    private final Set<EventListener> listeners = ConcurrentHashMap.newKeySet();
+    private final ExecutorService executorService = Executors.newFixedThreadPool(
+            Runtime.getRuntime().availableProcessors()
+    );
 
     public void registerListener(EventListener listener) {
-        listeners.put(listener, true);
+        listeners.add(listener);
     }
 
     public void deregisterListener(EventListener listener) {
@@ -17,7 +20,7 @@ public class EventManager {
     }
 
     public void notifyEvent(Event event) {
-        for (EventListener listener : listeners.keySet()) {
+        for (EventListener listener : listeners) {
             executorService.submit(() -> listener.onEvent(event));
         }
     }
