@@ -1,6 +1,7 @@
 # Implement a thread-safe asynchronous event manager
 
-Implement a thread-safe `EventManager` class that handles event notifications asynchronously to multiple listeners. The `EventManager` should be able to register listeners, deregister them, and notify them of events in a concurrent environment.
+Implement a thread-safe `EventManager` class that handles event notifications asynchronously to multiple listeners. 
+The `EventManager` should be able to register listeners, deregister them, and notify them of events in a concurrent environment.
 
 - There is already defined an `EventListener` interface with a single method `onEvent(Event e)`. This method is called whenever an event is notified.
 - There is already defined an `Event` class that encapsulates details of an event, such as type and source.
