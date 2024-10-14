@@ -1,23 +1,24 @@
 package mate.academy;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class EventManager {
-    private final ArrayList<EventListener> events = new ArrayList<>();
+    private final List<EventListener> listeners = new CopyOnWriteArrayList<>();
 
     public void registerListener(EventListener listener) {
-        events.add(listener);
+        listeners.add(listener);
     }
 
     public void deregisterListener(EventListener listener) {
-        events.remove(listener);
+        listeners.remove(listener);
     }
 
     public void notifyEvent(Event event) {
-        events.forEach(listener -> listener.onEvent(event));
+        listeners.forEach(listener -> listener.onEvent(event));
     }
 
     public void shutdown() {
-        events.clear();
+        listeners.clear();
     }
 }
