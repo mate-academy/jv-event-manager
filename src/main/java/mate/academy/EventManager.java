@@ -6,9 +6,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class EventManager {
-    private ConcurrentHashMap events = new ConcurrentHashMap();
+    private ConcurrentHashMap<String, Event> events = new ConcurrentHashMap();
 
-    private CopyOnWriteArrayList listeners = new CopyOnWriteArrayList();
+    private CopyOnWriteArrayList<EventListener> listeners = new CopyOnWriteArrayList();
 
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
@@ -21,10 +21,10 @@ public class EventManager {
     }
 
     public void notifyEvent(Event event) {
-        events.put(event.source(), event);
+        events.put((String) event.source(), event);
         if (listeners.size() > 0) {
-            for (Object listener : listeners) {
-                ((EventListener) listener).onEvent(event);
+            for (EventListener listener : listeners) {
+                executorService.submit(() -> listener.onEvent(event));
             }
         }
     }
