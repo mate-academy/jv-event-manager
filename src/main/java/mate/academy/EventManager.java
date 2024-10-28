@@ -6,7 +6,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class EventManager {
-    private final ConcurrentHashMap<String, Event> events = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Object, Event> events = new ConcurrentHashMap<>();
 
     private final CopyOnWriteArrayList<EventListener> listeners = new CopyOnWriteArrayList<>();
 
@@ -21,10 +21,16 @@ public class EventManager {
     }
 
     public void notifyEvent(Event event) {
-        events.put((String) event.source(), event);
+        events.put(event.source(), event);
         if (!listeners.isEmpty()) {
             for (EventListener listener : listeners) {
-                executorService.submit(() -> listener.onEvent(event));
+                executorService.submit(() -> {
+                    try {
+                        listener.onEvent(event);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
             }
         }
     }
