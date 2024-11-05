@@ -6,26 +6,27 @@ import mate.academy.listeners.SampleListener;
 public class Main {
     public static void main(String[] args) throws InterruptedException {
         EventManager manager = new EventManager();
+
+        // Register listeners
         EventListener sampleListener = new SampleListener();
-        EventListener loggingListener = new LoggingListener();
-
-        // Register listeners with some fun messages
-        System.out.println("🚀 EventManager is warming up! Preparing to rock the event world...");
-        manager.registerListener(sampleListener);
         System.out.println("🎉 SampleListener has joined the party!");
-        manager.registerListener(loggingListener);
+        manager.registerListener(sampleListener);
+
+        EventListener loggingListener = new LoggingListener();
         System.out.println("📢 LoggingListener is now on duty!");
+        manager.registerListener(loggingListener);
 
-        // Simulate several events
-        Event loginEvent = new Event("UserLogin", "User123");
-        Event logoutEvent = new Event("UserLogout", "User123");
-        Event dataChangeEvent = new Event("DataChange", "Database");
-
+        // Simulate events immediately after declaration
+        final Event loginEvent = new Event("UserLogin", "User123");
         System.out.println("\n🔔 Notifying events sequentially:");
         manager.notifyEvent(loginEvent);
         System.out.println("🔑 User login event sent!");
+
+        final Event dataChangeEvent = new Event("DataChange", "Database");
         manager.notifyEvent(dataChangeEvent);
         System.out.println("🗃️ Data change event sent!");
+
+        final Event logoutEvent = new Event("UserLogout", "User123");
         manager.notifyEvent(logoutEvent);
         System.out.println("🚪 User logout event sent!");
 
@@ -36,7 +37,8 @@ public class Main {
             new Thread(() -> {
                 for (int j = 0; j < 5; j++) {
                     Event event = new Event("ThreadEvent" + threadId, "Source" + j);
-                    System.out.println("💥 Thread " + threadId + " launching event rocket: " + event.type());
+                    System.out.println("💥 Thread " + threadId + " launching event rocket: "
+                            + event.type());
                     manager.notifyEvent(event);
                     try {
                         Thread.sleep(100); // Delay for visibility
