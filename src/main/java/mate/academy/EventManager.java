@@ -27,7 +27,7 @@ public class EventManager {
     }
 
     public void deregisterListener(EventListener listener) {
-        if (isShutdown.get()) {
+        if (!isShutdown.get()) {
             eventListeners.remove(listener);
         } else {
             throw new IllegalStateException("EventManager is closed");
