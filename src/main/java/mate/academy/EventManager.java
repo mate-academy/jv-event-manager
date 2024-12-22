@@ -18,8 +18,9 @@ public class EventManager {
     }
 
     public void notifyEvent(Event event) {
-        executorService.submit(() -> listeners.forEach(listener -> listener.onEvent(event)));
-
+        for (EventListener listener : listeners) {
+            executorService.submit(() -> listener.onEvent(event));
+        }
     }
 
     public void shutdown() {
