@@ -1,6 +1,6 @@
 package mate.academy;
 
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -22,17 +22,17 @@ public class EventManager {
             throw new IllegalArgumentException("Event cannot be null");
         }
 
-        CompletableFuture<?>[] futures = setOfSubs.stream()
-                .map(listener -> CompletableFuture.runAsync(() -> {
-                    try {
-                        listener.onEvent(event);
-                    } catch (Exception e) {
-                        throw new RuntimeException("Error in listener: " + e.getMessage(), e);
-                    }
-                }, executor))
-                .toArray(CompletableFuture[]::new);
-
-        CompletableFuture.allOf(futures).join();
+        for (EventListener listener : setOfSubs) {
+            Callable<Void> task = () -> {
+                try {
+                    listener.onEvent(event);
+                } catch (Exception e) {
+                    System.err.println("Error notifying listener: " + e.getMessage());
+                }
+                return null;
+            };
+            executor.submit(task);
+        }
     }
 
     public void shutdown() {
