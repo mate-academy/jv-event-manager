@@ -16,15 +16,14 @@ public class EventManager {
 
     public void registerListener(EventListener listener) {
         queue.add(listener);
-
     }
 
     public void deregisterListener(EventListener listener) {
-        queue.remove(listener);
+        queue.removeIf(listener::equals);
     }
 
     public void notifyEvent(Event event) {
-        queue.forEach(eventListener -> eventListener.onEvent(event));
+        queue.forEach(eventListener -> executor.submit(() -> eventListener.onEvent(event)));
     }
 
     public void shutdown() {
