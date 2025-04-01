@@ -1,5 +1,6 @@
 package mate.academy;
 
+import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
@@ -19,7 +20,12 @@ public class EventManager {
     }
 
     public void deregisterListener(EventListener listener) {
-        queue.removeIf(listener::equals);
+        Iterator<EventListener> iterator = queue.iterator();
+        while (iterator.hasNext()) {
+            if (listener.equals(iterator.next())) {
+                iterator.remove();
+            }
+        }
     }
 
     public void notifyEvent(Event event) {
