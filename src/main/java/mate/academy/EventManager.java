@@ -19,7 +19,7 @@ public class EventManager {
 
     public void notifyEvent(Event event) {
         for (EventListener listener : listeners) {
-            listener.onEvent(event);
+            executorService.submit(() -> listener.onEvent(event));
         }
     }
 
