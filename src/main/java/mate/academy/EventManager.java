@@ -21,6 +21,6 @@ public class EventManager {
     }
 
     public void shutdown() {
-
+        list.clear();
     }
 }
