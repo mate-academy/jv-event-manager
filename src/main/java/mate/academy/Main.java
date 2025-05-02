@@ -22,6 +22,12 @@ public class Main {
         Event anotherEvent = new Event("UserLogout", "User123");
         manager.notifyEvent(anotherEvent);
 
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         manager.shutdown();
     }
 }
