@@ -9,7 +9,6 @@ public class Main {
         EventManager manager = new EventManager();
         EventListener sampleListener = new SampleListener();
         EventListener loggingListener = new LoggingListener();
-
         manager.registerListener(sampleListener);
         manager.registerListener(loggingListener);
 
