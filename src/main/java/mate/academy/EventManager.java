@@ -5,7 +5,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class EventManager {
-    CopyOnWriteArrayList<EventListener> listeners = new CopyOnWriteArrayList<>();
+    private final CopyOnWriteArrayList<EventListener> listeners = new CopyOnWriteArrayList<>();
     private final ExecutorService executor = Executors.newCachedThreadPool();
 
     public void registerListener(EventListener listener) {
