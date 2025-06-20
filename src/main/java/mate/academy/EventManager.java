@@ -1,19 +1,35 @@
 package mate.academy;
 
-public class EventManager {
-    public void registerListener(EventListener listener) {
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+public class EventManager {
+    private Set<EventListener> listeners = ConcurrentHashMap.newKeySet();
+    private ExecutorService executorService;
+
+    public EventManager() {
+        this.executorService = Executors.newCachedThreadPool();
+    }
+
+    public void registerListener(EventListener listener) {
+        listeners.add(listener);
     }
 
     public void deregisterListener(EventListener listener) {
-
+        listeners.remove(listener);
     }
 
     public void notifyEvent(Event event) {
-
+        for (EventListener listener : listeners) {
+            executorService.submit(() -> {
+                listener.onEvent(event);
+            });
+        }
     }
 
     public void shutdown() {
-
+        executorService.shutdown();
     }
 }
