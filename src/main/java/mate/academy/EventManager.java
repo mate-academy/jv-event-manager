@@ -27,10 +27,16 @@ public class EventManager {
     public void shutdown() {
         executor.shutdown();
         try {
-            executor.awaitTermination(1, TimeUnit.SECONDS);
+            if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+                executor.shutdownNow();
+            }
         } catch (InterruptedException e) {
+            executor.shutdownNow();
+            Thread.currentThread().interrupt();
             throw new RuntimeException(e);
+        } finally {
+            eventListenersQueue.clear();
+
         }
-        eventListenersQueue.clear();
     }
 }
