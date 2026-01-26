@@ -5,7 +5,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class EventManager {
-    private final ConcurrentLinkedQueue<EventListener> eventListenersQueue = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<EventListener> eventListenersQueue =
+            new ConcurrentLinkedQueue<>();
     private final ExecutorService executor = Executors.newFixedThreadPool(10);
 
     public void registerListener(EventListener listener) {
