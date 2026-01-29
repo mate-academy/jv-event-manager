@@ -61,10 +61,6 @@ public class EventManagerTest {
                 latch.countDown();
             }
 
-            @Override
-            public Event getProcessedEvent() {
-                return null; // Not used in this test
-            }
         };
 
         manager.registerListener(listener);
@@ -79,7 +75,8 @@ public class EventManagerTest {
         // then
         assertTrue(latch.await(2, TimeUnit.SECONDS), "Not all events were processed in time");
         assertEquals(expectedEvents.size(), processedEvents.size());
-        assertTrue(processedEvents.containsAll(expectedEvents), "Not all expected events were processed");
+        assertTrue(processedEvents.containsAll(expectedEvents),
+            "Not all expected events were processed");
     }
 
     @Test
@@ -115,10 +112,6 @@ public class EventManagerTest {
                 latch.countDown();
             }
 
-            @Override
-            public Event getProcessedEvent() {
-                return null; // Not relevant for this test
-            }
         };
 
         manager.registerListener(listener);
@@ -133,10 +126,10 @@ public class EventManagerTest {
     }
 
     private void assertEventuallyProcessed(
-            SampleListener listener,
-            Event expectedEvent,
-            long timeout,
-            TimeUnit unit
+        SampleListener listener,
+        Event expectedEvent,
+        long timeout,
+        TimeUnit unit
     ) throws InterruptedException {
         long startTime = System.nanoTime();
         long timeoutNanos = unit.toNanos(timeout);
@@ -146,7 +139,8 @@ public class EventManagerTest {
             if (expectedEvent.equals(listener.getProcessedEvent())) {
                 processed = true;
             } else {
-                TimeUnit.MILLISECONDS.sleep(10); // Sleep a small amount of time before checking again
+                TimeUnit.MILLISECONDS.sleep(
+                    10); // Sleep a small amount of time before checking again
             }
         }
 

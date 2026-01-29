@@ -11,7 +11,6 @@ public class AbstractEventListener implements EventListener {
         this.processedEvent = e;
     }
 
-    @Override
     public Event getProcessedEvent() {
         return processedEvent;
     }
