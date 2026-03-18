@@ -13,13 +13,19 @@ public class EventManager {
 
     public EventManager() {
         executorService.submit(() -> {
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
+            try {
+                while (!Thread.currentThread().isInterrupted()) {
                     Event event = queue.take();
-                    listeners.forEach(listener -> listener.onEvent(event));
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
+                    for (EventListener listener : listeners) {
+                        try {
+                            listener.onEvent(event);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         });
     }
@@ -41,7 +47,7 @@ public class EventManager {
     }
 
     public void shutdown() {
-        executorService.shutdown();
+        executorService.shutdownNow();
         queue.clear();
     }
 }
