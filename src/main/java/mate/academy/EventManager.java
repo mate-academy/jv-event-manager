@@ -11,11 +11,11 @@ import org.slf4j.LoggerFactory;
 
 public class EventManager {
 
+    private static final Logger log = LoggerFactory.getLogger(EventManager.class);
+
     private final List<EventListener> listeners = new CopyOnWriteArrayList<>();
 
     private final ExecutorService executor = Executors.newFixedThreadPool(4);
-
-    private static final Logger log = LoggerFactory.getLogger(EventManager.class);
 
     public void registerListener(EventListener listener) {
 
