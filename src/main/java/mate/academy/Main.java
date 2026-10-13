@@ -23,5 +23,6 @@ public class Main {
         manager.notifyEvent(anotherEvent);
 
         manager.shutdown();
+        
     }
 }
